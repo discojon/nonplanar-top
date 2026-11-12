@@ -50,7 +50,7 @@ try:
 except ImportError as _e:      # reported later, so the script can still pass files through
     _IMPORT_ERROR = _e
 
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_PATH = os.path.join(SCRIPT_DIR, "nonplanar_top_last.log")
 

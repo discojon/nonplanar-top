@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 - 2026-11-12
+- PrusaSlicer 3 support: checked with 3.0.0-alpha14 output (the post-processing script works unchanged).
+- New PrusaSlicer 3 plugin (`prusaslicer3-plugin/`): a *Nonplanar top surfaces* print goal (5 top layers, 0.7 mm top shell, no ironing) and a command that adds the test coupons. The smoothing still runs as the post-processing script, because PrusaSlicer 3 plugins cannot change G-code yet.
+
 ## 0.3.0 - 2026-11-12
 - The skin now uses the print profile's line widths, speeds and accelerations: perimeter and solid infill settings for the levelling pass, external perimeter and top solid infill settings for the finish pass. Each can still be overridden in `nonplanar_top.ini` or Notes.
 - The finish pass runs at the profile's *Fill angle* by default (`finish_direction = profile`); `auto` keeps the old behaviour.

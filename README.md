@@ -6,7 +6,7 @@
 
 ![Before and after on the 50 mm dome test coupon](docs/images/coupon_dome_50mm_before_after.png)
 
-> **Status: beta (0.2.0).** Every converted file is re-simulated and must pass toolhead clearance, coverage and retraction checks before it is written, but the tool has not yet had wide real-world print testing. Print the [test coupons](docs/test-coupons.md) first and watch the end of the print, where the skin goes on.
+> **Status: beta (0.4.0).** Every converted file is re-simulated and must pass toolhead clearance, coverage and retraction checks before it is written, but the tool has not yet had wide real-world print testing. Print the [test coupons](docs/test-coupons.md) first and watch the end of the print, where the skin goes on.
 
 ## What it does
 
@@ -44,11 +44,12 @@ Full instructions: [docs/installation.md](docs/installation.md).
 | [Troubleshooting & FAQ](docs/troubleshooting.md) | Messages and what they mean |
 | [Toolhead model](docs/toolhead-model.md) | Where the clearance numbers come from |
 | [Test coupons](docs/test-coupons.md) | Sample parts to try first |
+| [PrusaSlicer 3](docs/prusaslicer-3.md) | Using it with PrusaSlicer 3, and the PrusaSlicer 3 plugin |
 
 ## Requirements
 
 - Prusa Core One with the INDX toolhead (the clearance model is built for it)
-- PrusaSlicer 2.7 or newer, relative extrusion (the Prusa default)
+- PrusaSlicer 2.7 or newer, including PrusaSlicer 3 ([notes and plugin](docs/prusaslicer-3.md)); relative extrusion (the Prusa default)
 - Python 3.9+ with `numpy`, `scipy`, `shapely`, `opencv-python`
 
 ## Command line

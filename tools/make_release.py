@@ -10,6 +10,7 @@ files = ["nonplanar_top.py", "nonplanar_top.ini", "install_windows.bat", "requir
          "samples/README.md", "samples/coupon_dome_50mm.stl", "samples/coupon_ramp_2deg.stl",
          "samples/coupon_wave_80mm.stl", "samples/nonplanar_top_test_coupons.3mf"]
 files += ["docs/" + f for f in sorted(os.listdir(os.path.join(ROOT, "docs"))) if f.endswith(".md")]
+files += ["prusaslicer3-plugin/README.md"] + ["prusaslicer3-plugin/io.github.discojon.nonplanar-top/" + f for f in ("manifest.json", "nonplanar_goal.lua", "add_coupons.lua", "assets/coupon_dome_50mm.stl", "assets/coupon_ramp_2deg.stl", "assets/coupon_wave_80mm.stl")]
 files += ["docs/images/" + f for f in sorted(os.listdir(os.path.join(ROOT, "docs/images")))]
 os.makedirs(os.path.join(ROOT, "dist"), exist_ok=True)
 def build(name, fl, extra=()):
@@ -23,3 +24,12 @@ def build(name, fl, extra=()):
 build("nonplanar_top-%s.zip" % ver, files)
 build("nonplanar_top-%s-printables.zip" % ver, [f for f in files if not f.endswith(".bat")],
       [("printables/INSTALL.txt", "INSTALL.txt")])
+# PrusaSlicer 3 plugin on its own: the bundle folder, ready to copy into the user plugins folder
+pdir = os.path.join(ROOT, "prusaslicer3-plugin")
+out = os.path.join(ROOT, "dist", "nonplanar_top-prusaslicer3-plugin-%s.zip" % ver)
+with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
+    for base, _, fnames in os.walk(pdir):
+        for fn in sorted(fnames):
+            full = os.path.join(base, fn)
+            z.write(full, os.path.relpath(full, pdir))
+print(out, os.path.getsize(out) // 1024, "KB")

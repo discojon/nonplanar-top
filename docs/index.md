@@ -11,4 +11,5 @@
 - [Troubleshooting & FAQ](troubleshooting.md)
 - [Toolhead model](toolhead-model.md)
 - [Test coupons](test-coupons.md)
+- [PrusaSlicer 3](prusaslicer-3.md)
 - [Credits](../CREDITS.md)

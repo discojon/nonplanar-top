@@ -1,0 +1,16 @@
+{
+  "id": "io.github.discojon.nonplanar-top",
+  "name": "Nonplanar top surfaces",
+  "version": "0.4.0",
+  "min_slicer_version": "3.0.0-alpha14",
+  "author": "discojon",
+  "license": "AGPL-3.0-or-later",
+  "description": "Print goal and test coupons for nonplanar_top, the post-processing script that reprints shallow top surfaces as a smooth nonplanar skin on the Prusa Core One INDX",
+  "category": "Print quality",
+  "web": "https://github.com/discojon/nonplanar-top",
+  "repo": "https://github.com/discojon/nonplanar-top",
+  "required_apis": {
+    "project.plugin": "1.0.0",
+    "print.print_mode": "1.0.0"
+  }
+}
