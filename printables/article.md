@@ -56,10 +56,10 @@ The model page has three test coupons and a ready PrusaSlicer project:
 | Ramp | flat 2° slope |
 | Wave, 80 mm | ±0.6 mm |
 
-1. Install Python and run `install_windows.bat` from the download.
+1. Install Python and the libraries as described in `INSTALL.txt` in the download (or use the one-click installer from the GitHub release).
 2. Measure your shroud height and enter it in `nonplanar_top.ini`.
 3. Open `nonplanar_top_test_coupons.3mf`. It uses Prusa's stock Core One INDX profiles with a **0.20mm NONPLANAR** print profile, which is the stock 0.20mm Balanced with `nonplanar` in Notes, 5 top layers and no ironing.
-4. Add the post-processing line from the installer to the print profile, slice, and export.
+4. Add the post-processing line from `INSTALL.txt` to the print profile, slice, and export.
 5. Open the exported file with *File > G-code preview* to see the skin; the normal preview shows the file before conversion.
 
 Print one coupon with your normal profile and one with the nonplanar profile and compare them under a raking light. Watch the end of the print, where the skin goes on.

@@ -37,16 +37,16 @@ Works with plain and binary G-code, PrusaLink and USB.
 ### What's in the download
 - `nonplanar_top.py`: the script
 - `nonplanar_top.ini`: settings
-- `install_windows.bat`: installs the Python libraries and gives you the line to paste into PrusaSlicer
+- `INSTALL.txt`: step-by-step setup (the one-click Windows installer is in the GitHub download, since Printables doesn't allow .bat files)
 - `profiles/NONPLANAR_print_profile.ini`: ready-made print profile bundle
 - `docs/`: full documentation
 - three **test coupons** (dome, ramp, wave)
 
 ### Setup (about 10 minutes)
 1. Install Python 3.10+ from python.org (tick *Add python.exe to PATH*).
-2. Run `install_windows.bat`.
+2. Install the libraries: `py -m pip install numpy scipy shapely opencv-python` (or use the one-click installer from the GitHub release).
 3. **Measure the gap between your nozzle tip and the lowest point of the fan shroud** (nozzle hot) and enter it in `nonplanar_top.ini`. This one number decides how much can be smoothed.
-4. In PrusaSlicer (Expert mode), paste the line from the installer into *Print Settings > Output options > Post-processing scripts*.
+4. In PrusaSlicer (Expert mode), add the line from `INSTALL.txt` to *Print Settings > Output options > Post-processing scripts*.
 5. Type `nonplanar` in *Print Settings > Notes* and save the profile under a new name. Only profiles with that word are converted.
 6. To see the result, open the exported file with *File > G-code preview*.
 
