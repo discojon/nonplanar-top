@@ -4,7 +4,7 @@ import os, re, zipfile
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ver = re.search(r'VERSION = "([^"]+)"', open(os.path.join(ROOT, "nonplanar_top.py"), encoding="utf-8").read()).group(1)
 files = ["nonplanar_top.py", "nonplanar_top.ini", "install_windows.bat", "requirements.txt",
-         "README.md", "LICENSE", "CHANGELOG.md", "profiles/NONPLANAR_print_profile.ini",
+         "README.md", "LICENSE", "CREDITS.md", "CHANGELOG.md", "profiles/NONPLANAR_print_profile.ini",
          "samples/README.md", "samples/coupon_dome_50mm.stl", "samples/coupon_ramp_2deg.stl",
          "samples/coupon_wave_80mm.stl"]
 files += ["docs/" + f for f in sorted(os.listdir(os.path.join(ROOT, "docs"))) if f.endswith(".md")]

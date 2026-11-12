@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: AGPL-3.0-or-later
 # nonplanar_top - smooth top surfaces for PrusaSlicer prints (Prusa Core One INDX)
 # Copyright (C) 2026 DiscoJon
+# https://github.com/discojon/nonplanar-top
 #
 # This program is free software: you can redistribute it and/or modify it under the
-# terms of the GNU General Public License as published by the Free Software Foundation,
-# either version 3 of the License, or (at your option) any later version.  It is
-# distributed WITHOUT ANY WARRANTY; see the LICENSE file for details.
+# terms of the GNU Affero General Public License as published by the Free Software
+# Foundation, either version 3 of the License, or (at your option) any later version.
+# It is distributed WITHOUT ANY WARRANTY; see the LICENSE file for details.
 #
-# The toolhead clearance tables (INDX_FINE, INDX_COARSE) are measurements derived from
-# the reverse-engineered INDX CAD by robertsamples (github.com/robertsamples/INDX-CAD,
-# CC BY-SA 4.0), itself based on Prusa Research's INDX toolhead model.  The shroud table
-# (SHROUD_REL) is measured from Prusa's CORE_One_INDX_fan_shroud_r1 part.
+# Third-party material (full list with links in CREDITS.md):
+#  * The toolhead tables INDX_FINE, INDX_COARSE and SHROUD_REL are measurements and are
+#    licensed separately under CC BY-SA 4.0 (see the marked block below).
+#  * The .bgcode reader follows Prusa Research's libbgcode format specification; the
+#    MeatPack decoder is a Python port of libbgcode's MeatPack code (AGPL-3.0).
+#    MeatPack was created by Scott Mudge.  heatshrink (the compression format) is by
+#    Scott Vokes / Atomic Object (ISC licence); the decoder here is an independent
+#    implementation of that format.
 """
 nonplanar_top.py - smooth the shallow top surfaces of a PrusaSlicer print.
 
@@ -45,7 +50,7 @@ try:
 except ImportError as _e:      # reported later, so the script can still pass files through
     _IMPORT_ERROR = _e
 
-VERSION = "0.2.0"
+VERSION = "0.2.1"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_PATH = os.path.join(SCRIPT_DIR, "nonplanar_top_last.log")
 
@@ -115,10 +120,19 @@ def fnum(cfg, k):
 # toolhead model (Core One + INDX)
 #   radial profile = lowest point of the head at a given horizontal distance from the
 #   nozzle axis, relative to the nozzle tip, taken over all directions.
-#   INDX values from the reverse-engineered CAD (github.com/robertsamples/INDX-CAD),
-#   shroud values from CORE_One_INDX_fan_shroud_r1.stl relative to its own lowest
-#   point, with 3 mm allowance for uncertainty in where it sits.
 # --------------------------------------------------------------------------------------
+# ---- BEGIN CC BY-SA 4.0 DATA ---------------------------------------------------------
+# SPDX-License-Identifier: CC-BY-SA-4.0
+# These tables are licensed under the Creative Commons Attribution-ShareAlike 4.0
+# International licence (https://creativecommons.org/licenses/by-sa/4.0/), not the AGPL.
+# INDX_FINE / INDX_COARSE: lowest point of the toolhead at each distance from the nozzle,
+#   measured (by meshing the STEP assembly) from "INDX-CAD" by robertsamples,
+#   https://github.com/robertsamples/INDX-CAD (CC BY-SA 4.0), which was reverse
+#   engineered from Prusa Research's INDX toolhead model (CC BY-SA 4.0).
+# SHROUD_REL: lowest point of Prusa Research's CORE_One_INDX_fan_shroud_r1 part at each
+#   distance from its outlet centre, relative to its own lowest point, with 3 mm of
+#   position uncertainty applied.
+# Changes: reduced from 3D geometry to these radial lowest-point tables.
 INDX_FINE = [  # (r_from, r_to, lowest head z above the tip)
     (0.0, 0.6, 0.0), (0.6, 0.8, 0.146), (0.8, 1.0, 0.365), (1.0, 1.2, 0.583), (1.2, 1.4, 0.802),
     (1.4, 1.6, 1.094), (1.6, 1.8, 1.312), (1.8, 2.0, 1.531), (2.0, 2.2, 1.75), (2.2, 3.4, 2.657),
@@ -134,6 +148,7 @@ SHROUD_REL = {6: 38.35, 7: 20.67, 8: 15.43, 9: 15.43, 10: 13.42, 11: 13.42, 12: 
               33: 23.42, 34: 25.29, 35: 27.07, 36: 28.82, 37: 30.43, 38: 32.22, 39: 33.92,
               40: 35.66, 41: 37.72, 42: 39.62, 43: 41.75, 44: 43.63, 45: 46.07, 46: 48.76,
               47: 52.39}
+# ---- END CC BY-SA 4.0 DATA -----------------------------------------------------------
 
 def head_envelope(cfg, step=0.1, rmax=60.0):
     """returns radii r[i] (bin starts) and E[i]: lowest head point (above tip) at any distance >= r[i]"""
@@ -155,6 +170,10 @@ def head_envelope(cfg, step=0.1, rmax=60.0):
 
 # --------------------------------------------------------------------------------------
 # binary G-code (.bgcode) reading
+#   File layout follows the libbgcode specification by Prusa Research
+#   (https://github.com/prusa3d/libbgcode, AGPL-3.0).
+#   heatshrink format: Scott Vokes / Atomic Object (https://github.com/atomicobject/heatshrink,
+#   ISC licence); _heatshrink_py is an independent implementation of the decoder.
 # --------------------------------------------------------------------------------------
 def _heatshrink_py(data, W, L, outlen):
     out = bytearray()
@@ -196,6 +215,9 @@ def heatshrink_decompress(data, W, L, outlen):
     except Exception:
         return _heatshrink_py(data, W, L, outlen)
 
+# MeatPack decoding: Python port of the MeatPack "unbinarize" code in libbgcode
+# (src/LibBGCode/binarize/meatpack.cpp, Copyright Prusa Research, AGPL-3.0).
+# MeatPack was created by Scott Mudge (https://github.com/scottmudge/Prusa-Firmware-MeatPack).
 _MP_TBL = "0123456789. \nGX"
 def meatpack_decode(src):
     out = []

@@ -13,4 +13,5 @@
 
 ## Notes
 - Link the source: https://github.com/discojon/nonplanar-top
-- Licence: choose GNU GPL v3 if Printables offers it, otherwise CC BY-SA 4.0.
+- Licence field: Creative Commons - Attribution - Share Alike. The software itself is AGPL-3.0 (stated in the description and in the zip).
+- Credit the INDX CAD (robertsamples) and Prusa Research in the description; the text in `description.md` already does.

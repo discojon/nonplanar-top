@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1 - 2026-11-12
+- Licence changed to AGPL-3.0-or-later (the `.bgcode` reader ports code from Prusa's AGPL-licensed libbgcode).
+- Toolhead data tables are marked and licensed separately under CC BY-SA 4.0, as required by their source.
+- Added CREDITS.md and attribution notes for INDX-CAD, Prusa Research (INDX model, fan shroud, libbgcode), MeatPack and heatshrink.
+
 ## 0.2.0 - 2026-11-12
 - Fixed: tiny gaps between top-layer lines were read as height contours and could raise the skin by up to 0.15 mm on flat areas next to slopes.
 - Fixed: smoothing could lift flat areas next to a slope; the smoothed surface now stays within 0.04 mm of the interpolated one and inside each layer step's height band.

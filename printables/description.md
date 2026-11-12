@@ -13,8 +13,8 @@ nonplanar, non-planar, core one, indx, prusaslicer, post-processing, top surface
 # Category
 3D Printers > Test Models (or Other)
 
-# Licence
-GNU GPL v3 (if not offered, choose CC BY-SA 4.0, which this project's data is compatible with)
+# Licence (Printables field)
+Creative Commons - Attribution - Share Alike (covers the coupons and images on the listing). The software in the zip is AGPL-3.0-or-later; see the note at the end of the description.
 
 ---
 
@@ -57,7 +57,13 @@ Works with plain and binary G-code, PrusaLink and USB.
 - No sequential printing or spiral vase.
 - Beta: start with the test coupons and watch the end of the print where the skin goes on.
 
-### Credits
-Toolhead clearance data derived from the reverse-engineered INDX CAD by robertsamples (CC BY-SA 4.0), based on Prusa Research's INDX toolhead model. Shroud data measured from Prusa's CORE_One_INDX_fan_shroud_r1. Not affiliated with Prusa Research.
+### Licence and credits
+The software is licensed under the **GNU AGPL v3.0 or later**; the test coupons and images are CC BY-SA 4.0.
+
+- Toolhead clearance data measured from the reverse-engineered **INDX CAD by robertsamples** (github.com/robertsamples/INDX-CAD, CC BY-SA 4.0), based on **Prusa Research's INDX toolhead model** (CC BY-SA 4.0). These data tables remain CC BY-SA 4.0.
+- Fan shroud shape measured from **Prusa Research's CORE_One_INDX_fan_shroud_r1** (Core One INDX printed parts).
+- Binary G-code reading based on **Prusa Research's libbgcode** (AGPL-3.0), including a port of its **MeatPack** decoder (MeatPack by **Scott Mudge**); compression format **heatshrink** by **Scott Vokes / Atomic Object**.
+
+Full list: CREDITS.md in the download. Not affiliated with Prusa Research.
 
 Problems or suggestions: please open an issue at https://github.com/discojon/nonplanar-top/issues (attach `nonplanar_top_last.log`).

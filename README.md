@@ -65,6 +65,8 @@ py nonplanar_top.py  myprint.gcode --force --set shroud_height_mm=2.5 --set debu
 
 Found a problem or have a print to share? Open an [issue](https://github.com/discojon/nonplanar-top/issues) and attach `nonplanar_top_last.log`.
 
-## Licence
+## Licence and credits
 
-GPL-3.0-or-later, see [LICENSE](LICENSE). The toolhead clearance tables are derived from the reverse-engineered [INDX CAD](https://github.com/robertsamples/INDX-CAD) by robertsamples (CC BY-SA 4.0), which is based on Prusa Research's INDX toolhead model; the shroud table is measured from Prusa's `CORE_One_INDX_fan_shroud_r1` part. Not affiliated with Prusa Research.
+AGPL-3.0-or-later, see [LICENSE](LICENSE). The toolhead clearance tables are licensed separately under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/): they are measured from the reverse-engineered [INDX CAD](https://github.com/robertsamples/INDX-CAD) by robertsamples, based on Prusa Research's INDX toolhead model, and from Prusa's `CORE_One_INDX_fan_shroud_r1` part. The `.bgcode` reader follows Prusa's [libbgcode](https://github.com/prusa3d/libbgcode) (AGPL-3.0) and ports its MeatPack decoder. Full list with links: [CREDITS.md](CREDITS.md).
+
+Not affiliated with Prusa Research.

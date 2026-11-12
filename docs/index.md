@@ -11,3 +11,4 @@
 - [Troubleshooting & FAQ](troubleshooting.md)
 - [Toolhead model](toolhead-model.md)
 - [Test coupons](test-coupons.md)
+- [Credits](../CREDITS.md)
