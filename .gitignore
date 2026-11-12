@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+nonplanar_top_last.log
+nonplanar_top_last.png
+*_nonplanar.gcode
+*.gcode.output_name
+dist/

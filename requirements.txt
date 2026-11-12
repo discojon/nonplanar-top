@@ -1,0 +1,8 @@
+numpy>=1.22
+scipy>=1.8
+shapely>=2.0
+opencv-python>=4.6
+# optional: debug picture of the smoothed areas
+# matplotlib>=3.5
+# optional: faster reading of binary .bgcode files
+# heatshrink2>=0.12
