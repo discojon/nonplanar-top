@@ -32,6 +32,8 @@ It is built for the **Prusa Core One with the INDX toolhead** and knows the tool
 
 Works with plain and binary G-code, PrusaLink and USB.
 
+**Source code, documentation and updates:** https://github.com/discojon/nonplanar-top
+
 ### What's in the download
 - `nonplanar_top.py`: the script
 - `nonplanar_top.ini`: settings
@@ -57,3 +59,5 @@ Works with plain and binary G-code, PrusaLink and USB.
 
 ### Credits
 Toolhead clearance data derived from the reverse-engineered INDX CAD by robertsamples (CC BY-SA 4.0), based on Prusa Research's INDX toolhead model. Shroud data measured from Prusa's CORE_One_INDX_fan_shroud_r1. Not affiliated with Prusa Research.
+
+Problems or suggestions: please open an issue at https://github.com/discojon/nonplanar-top/issues (attach `nonplanar_top_last.log`).

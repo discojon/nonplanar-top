@@ -7,10 +7,10 @@
 
 ## Upload
 - **Model files:** `samples/coupon_dome_50mm.stl`, `samples/coupon_ramp_2deg.stl`, `samples/coupon_wave_80mm.stl`
-- **Other files:** `nonplanar_top-0.2.0.zip` (from the Gitea release, or build it with `tools/make_release.py`)
+- **Other files:** `nonplanar_top-0.2.0.zip` (from the GitHub release, or build it with `tools/make_release.py`)
 - **Images:** your photos first, then `docs/images/coupon_dome_50mm_before_after.png`, `coupon_wave_80mm_before_after.png`, `coupon_dome_50mm_profile.png`, `samples/example_output/coupon_dome_50mm_regions.png`
 - **Text:** title, summary, tags, licence and description from `description.md`
 
 ## Notes
-- Your Gitea server is private, so do not link to it from the listing. If you want a public source link later, mirror the repo to GitHub or Codeberg.
+- Link the source: https://github.com/discojon/nonplanar-top
 - Licence: choose GNU GPL v3 if Printables offers it, otherwise CC BY-SA 4.0.

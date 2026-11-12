@@ -6,7 +6,7 @@
 Download Python 3.10 or newer from <https://www.python.org/downloads/>. In the installer, tick **Add python.exe to PATH**.
 
 ### 2. Run the installer
-Unzip the download and double-click **`install_windows.bat`**. It:
+Download the latest zip from [Releases](https://github.com/discojon/nonplanar-top/releases), unzip it and double-click **`install_windows.bat`**. It:
 
 - installs `numpy`, `scipy`, `shapely` and `opencv-python`
 - copies `nonplanar_top.py` and `nonplanar_top.ini` to `C:\PrusaTools\nonplanar\` (an existing `.ini` is kept)

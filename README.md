@@ -23,7 +23,7 @@ Steep areas, chamfers, walls, flat tops and everything below the top keep normal
 ## Quick start (Windows)
 
 1. Install [Python 3.10+](https://www.python.org/downloads/) and tick **Add python.exe to PATH**.
-2. Download this project and run **`install_windows.bat`**. It installs the libraries, copies the script to `C:\PrusaTools\nonplanar\` and puts the line for PrusaSlicer on your clipboard.
+2. Download the latest zip from [Releases](https://github.com/discojon/nonplanar-top/releases) and run **`install_windows.bat`**. It installs the libraries, copies the script to `C:\PrusaTools\nonplanar\` and puts the line for PrusaSlicer on your clipboard.
 3. **Measure your fan shroud height** and put it in `nonplanar_top.ini` ([how](docs/measuring.md)).
 4. In PrusaSlicer (Expert mode): **Print Settings > Output options > Post-processing scripts**, paste the line.
 5. In **Print Settings > Notes**, type `nonplanar` and save the print profile under a new name. The script only acts on profiles whose notes contain that word.
@@ -60,6 +60,10 @@ py nonplanar_top.py  myprint.gcode --force --set shroud_height_mm=2.5 --set debu
 ```
 
 `--force` converts even when the profile notes do not contain `nonplanar`.
+
+## Feedback
+
+Found a problem or have a print to share? Open an [issue](https://github.com/discojon/nonplanar-top/issues) and attach `nonplanar_top_last.log`.
 
 ## Licence
 
