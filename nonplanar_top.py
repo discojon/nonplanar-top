@@ -50,7 +50,7 @@ try:
 except ImportError as _e:      # reported later, so the script can still pass files through
     _IMPORT_ERROR = _e
 
-VERSION = "0.2.1"
+VERSION = "0.3.0"
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 LOG_PATH = os.path.join(SCRIPT_DIR, "nonplanar_top_last.log")
 
@@ -78,14 +78,19 @@ DEFAULTS = {
     # Skin: finish pass thickness, and the thinnest allowed levelling pass.
     "finish_layer_mm": "0.2",
     "min_level_layer_mm": "0.1",
-    # Finish pass line direction: auto (along the region's long side), x, y, or an angle in degrees.
-    "finish_direction": "auto",
-    # Speeds in mm/s.
-    "level_perimeter_speed": "40",
-    "level_infill_speed": "60",
-    "finish_perimeter_speed": "35",
-    "finish_infill_speed": "50",
-    "skin_accel": "1500",
+    # Skin line widths, speeds, accelerations and direction.  "profile" takes them from the
+    # print profile (see make_skin); a number overrides it.
+    #   levelling pass = perimeter + solid infill settings, finish pass = external perimeter
+    #   + top solid infill settings, lines at the profile's fill angle (levelling at +90).
+    # Finish pass line direction: profile (fill angle), auto (along the region's long side),
+    # x, y, or an angle in degrees.
+    "finish_direction": "profile",
+    "skin_line_width": "profile",          # mm, all skin lines
+    "level_perimeter_speed": "profile",    # mm/s
+    "level_infill_speed": "profile",
+    "finish_perimeter_speed": "profile",
+    "finish_infill_speed": "profile",
+    "skin_accel": "profile",               # mm/s2, all skin moves
     # Height of travel moves over the skin.
     "travel_lift_mm": "0.6",
     # What to do when the conversion fails its safety checks:
@@ -381,6 +386,81 @@ def conf_list(conf, key, tool=0, default=None, cast=float):
         return cast(s)
     except ValueError:
         return default
+
+def _conf_raw(conf, key, tool=0):
+    v = conf.get(key)
+    if v is None:
+        return None
+    parts = [s.strip().strip('"') for s in re.split(r"[;,]", v)]
+    s = parts[tool] if tool < len(parts) else parts[0]
+    return None if s in ("", "nil") else s
+
+def _num_or_pct(raw, base):
+    """'0.45' -> 0.45, '90%' -> 0.9 * base, unparsable -> None"""
+    if raw is None:
+        return None
+    try:
+        return float(raw[:-1]) / 100.0 * base if raw.endswith("%") else float(raw)
+    except (ValueError, TypeError):
+        return None
+
+def skin_params(conf, tool, cfg):
+    """Line widths, speeds, accelerations, direction and flow limit for the skin, taken
+    from the print profile the way PrusaSlicer resolves them, unless overridden in cfg."""
+    nd = conf_list(conf, "nozzle_diameter", tool, 0.4)
+    def width(key):
+        w = _num_or_pct(_conf_raw(conf, key), nd)            # % of nozzle diameter
+        if not w:
+            w = _num_or_pct(_conf_raw(conf, "extrusion_width"), nd)
+        if not w:
+            w = 1.125 * nd                                       # PrusaSlicer's automatic width
+        return min(max(w, 0.8 * nd), 2.5 * nd)
+    def speed(key, parent=None, fallback=None):
+        base = speed(*parent) if parent else None
+        v = _num_or_pct(_conf_raw(conf, key), base or 0.0)
+        return v if v and v > 0 else (base or fallback)
+    p_peri = ("perimeter_speed", None, 45.0)
+    p_inf = ("infill_speed", None, 80.0)
+    p_sol = ("solid_infill_speed", p_inf, 60.0)
+    sp = {"level_perimeter_speed": speed(*p_peri),
+          "finish_perimeter_speed": speed("external_perimeter_speed", p_peri, 35.0),
+          "level_infill_speed": speed(*p_sol),
+          "finish_infill_speed": speed("top_solid_infill_speed", p_sol, 50.0)}
+    dflt_acc = conf_list(conf, "default_acceleration", 0, 0) or 1500.0
+    def acc(key):
+        v = _num_or_pct(_conf_raw(conf, key), dflt_acc)
+        return v if v and v > 0 else dflt_acc
+    ac = {"level_perimeter": acc("perimeter_acceleration"), "finish_perimeter": acc("external_perimeter_acceleration"),
+          "level_infill": acc("solid_infill_acceleration"), "finish_infill": acc("top_solid_infill_acceleration")}
+    wd = {"level_perimeter": width("perimeter_extrusion_width"),
+          "finish_perimeter": width("external_perimeter_extrusion_width"),
+          "level_infill": width("solid_infill_extrusion_width"),
+          "finish_infill": width("top_infill_extrusion_width")}
+    def num(k):
+        v = str(cfg.get(k, "profile")).strip().lower()
+        if v in ("", "profile"):
+            return None
+        try:
+            return float(v)
+        except ValueError:
+            raise ValueError("setting %s must be 'profile' or a number, not %r" % (k, cfg.get(k)))
+    for k in sp:
+        if num(k) is not None:
+            sp[k] = num(k)
+    if num("skin_accel") is not None:
+        ac = {k: num("skin_accel") for k in ac}
+    if num("skin_line_width") is not None:
+        wd = {k: num("skin_line_width") for k in wd}
+    amax = conf_list(conf, "machine_max_acceleration_extruding", 0, 0)
+    if amax:
+        ac = {k: min(v, amax) for k, v in ac.items()}
+    # flow limit: the filament's max volumetric speed and the print profile's, whichever is lower
+    vols = [v for v in (conf_list(conf, "filament_max_volumetric_speed", tool, 0),
+                        conf_list(conf, "max_volumetric_speed", 0, 0)) if v and v > 0]
+    pattern = (conf.get("top_fill_pattern") or "").strip()
+    return {"nozzle": nd, "width": wd, "speed": sp, "accel": ac,
+            "fill_angle": (conf_list(conf, "fill_angle", 0, 45.0) or 0.0) % 180.0,
+            "max_vol": min(vols) if vols else 15.0, "top_fill_pattern": pattern}
 
 # --------------------------------------------------------------------------------------
 # G-code parsing
@@ -1090,6 +1170,7 @@ class SkinWriter:
         self.fil_a = math.pi * (d / 2) ** 2
         self.em = conf_list(conf, "extrusion_multiplier", tool, 1.0)
         self.lift = ctx["lift"]; self.plow = ctx["plow"]
+        self.max_vol = ctx.get("max_vol", 15.0); self.acc = None
         self.S = ctx["S"]
         self.set_pass(0)
     def set_pass(self, k):
@@ -1130,9 +1211,13 @@ class SkinWriter:
         self.g.append("G1 X%s Y%s F%s" % (fmt(x), fmt(y), fmt(self.TF, 0)))
         self.g.append("G1 Z%s F%s" % (fmt(zt), fmt(self.ZF, 0)))
         self.pos = (x, y); self.z = zt; self.lifted = False
-    def path(self, pts, zoff, thick_fn, width, feed, infill_spacing=None):
+    def accel(self, a):
+        if a is not None and (self.acc is None or abs(a - self.acc) > 0.5):
+            self.g.append("M204 P%s" % fmt(a, 0)); self.acc = a
+    def path(self, pts, zoff, thick_fn, width, feed, infill_spacing=None, accel=None):
         x0, y0 = pts[0]
         self.travel(x0, y0, self.surf(x0, y0) + zoff)
+        self.accel(accel)
         self.prime()
         first = True
         for (xa, ya), (xb, yb) in zip(pts[:-1], pts[1:]):
@@ -1148,9 +1233,9 @@ class SkinWriter:
                 e = area * (L / n) / self.fil_a * self.em
                 zb = self.surf(pxb, pyb) + zoff
                 dz = abs(zb - self.z)
-                f = feed
+                f = min(feed, 60 * self.max_vol / max(area, 1e-6))   # filament flow limit
                 if dz > 1e-6:
-                    f = min(feed, 60 * self.vz * (L / n) / dz)
+                    f = min(f, 60 * self.vz * (L / n) / dz)
                 c = "G1 X%s Y%s Z%s E%s" % (fmt(pxb), fmt(pyb), fmt(zb), fmt(e, 5))
                 if first or abs(f - feed) > 1 or getattr(self, "_lastF", None) != f:
                     c += " F" + fmt(f, 0); self._lastF = f
@@ -1168,9 +1253,9 @@ class SkinWriter:
 def make_skin(ctx, regions, start_xy, start_z, retracted, tool, cfg):
     hf = fnum(cfg, "finish_layer_mm"); tmin = fnum(cfg, "min_level_layer_mm")
     Zs = ctx["Zs"]
-    w_peri = 0.45; spacing = 0.38
-    nd = conf_list(ctx["conf"], "nozzle_diameter", tool, 0.4)
-    w_peri = round(nd * 1.125, 3); spacing = round(nd * 0.95, 3)
+    sk = ctx["skin"]
+    # line spacing for a given line width, as PrusaSlicer computes it for a 0.2 mm layer
+    spacing_of = lambda w: round(w - hf * (1 - math.pi / 4), 3)
     S = ctx["S"]
     def base_top(x, y):
         s = S.at(x, y)
@@ -1181,8 +1266,7 @@ def make_skin(ctx, regions, start_xy, start_z, retracted, tool, cfg):
         return max(tmin * 0.5, float(S.at(x, y)) - hf - base_top(x, y))
     t_finish = lambda x, y: hf
     W = SkinWriter(ctx, start_xy, start_z, retracted, tool)
-    W.g.append("M204 P%s" % fmt(fnum(cfg, "skin_accel"), 0))
-    spd = lambda k: 60 * fnum(cfg, k)
+    spd = lambda k: 60 * sk["speed"][k]
     # order regions nearest-first
     todo = list(regions); ordered = []
     pos = start_xy
@@ -1191,10 +1275,14 @@ def make_skin(ctx, regions, start_xy, start_z, retracted, tool, cfg):
         r = todo.pop(j); ordered.append(r)
         c = r["poly"].centroid; pos = (c.x, c.y)
     stats = []
-    for passno, (zoff, tfn, pf, inf_key, name) in enumerate([
-            (-hf, t_level, "level_perimeter_speed", "level_infill_speed", "levelling pass"),
-            (0.0, t_finish, "finish_perimeter_speed", "finish_infill_speed", "finish pass")]):
+    for passno, (zoff, tfn, key, name) in enumerate([
+            (-hf, t_level, "level", "levelling pass"),
+            (0.0, t_finish, "finish", "finish pass")]):
         W.set_pass(passno)
+        pf = key + "_perimeter_speed"; inf_key = key + "_infill_speed"
+        w_peri = sk["width"][key + "_perimeter"]; w_fill = sk["width"][key + "_infill"]
+        spacing = spacing_of(w_fill)
+        a_peri = sk["accel"][key + "_perimeter"]; a_fill = sk["accel"][key + "_infill"]
         for r in ordered:
             pg = r["poly"]
             W.g.append("; nonplanar skin: %s, region %d" % (name, r["id"]))
@@ -1220,15 +1308,15 @@ def make_skin(ctx, regions, start_xy, start_z, retracted, tool, cfg):
                         best = (d[jj], ri, jj)
                 _, ri, jj = best
                 rr = rings.pop(ri)[:-1]; rr = rr[jj:] + rr[:jj] + [rr[jj]]
-                W.path(rr, zoff, tfn, w_peri, spd(pf))
+                W.path(rr, zoff, tfn, w_peri, spd(pf), accel=a_peri)
             region = pg.buffer(-(w_peri + spacing / 2 - 0.07))
             ang = r["angle"] + (90.0 if passno == 0 else 0.0)
             if not region.is_empty:
                 rows = hatch_lines(region, ang, spacing)
                 segs = order_monotonic(rows) if any(rw[1] for rw in rows) else []
-                W.g.append(";WIDTH:%s" % fmt(spacing + 0.04))
+                W.g.append(";WIDTH:%s" % fmt(w_fill))
                 for pa, pb in segs:
-                    W.path([pa, pb], zoff, tfn, spacing, spd(inf_key), infill_spacing=spacing)
+                    W.path([pa, pb], zoff, tfn, spacing, spd(inf_key), infill_spacing=spacing, accel=a_fill)
             stats.append((name, r["id"], W.e_total - e0))
             W.lift_off()
             if r.get("obj", -1) >= 0:
@@ -1523,7 +1611,8 @@ def convert(text, conf, cfg, log):
                 if pg.area < fnum(cfg, "min_region_area_mm2"):
                     continue
                 fd = cfg["finish_direction"].strip().lower()
-                if fd == "x": ang = 0.0
+                if fd == "profile": ang = skin_params(conf, end_tool, cfg)["fill_angle"]
+                elif fd == "x": ang = 0.0
                 elif fd == "y": ang = 90.0
                 elif fd == "auto":
                     rr = pg.minimum_rotated_rectangle
@@ -1622,6 +1711,15 @@ def convert(text, conf, cfg, log):
            "R_pass": [Field(R_lev, grid), Field(R_fin, grid)],
            "H_pass": [Field(dil(H_lev), grid), Field(dil(H_fin), grid)],
            "lines_in": lines, "max_z": max_z, "ws": ws}
+    sk = skin_params(conf, end_tool, cfg)
+    ctx["skin"] = sk; ctx["max_vol"] = sk["max_vol"]
+    log("skin settings: widths %s mm, speeds %s mm/s, accel %s mm/s2, flow limit %.1f mm3/s" % (
+        "/".join(fmt(sk["width"][k]) for k in ("level_perimeter", "level_infill", "finish_perimeter", "finish_infill")),
+        "/".join(fmt(sk["speed"][k + "_speed"], 0) for k in ("level_perimeter", "level_infill", "finish_perimeter", "finish_infill")),
+        "/".join(fmt(sk["accel"][k], 0) for k in ("level_perimeter", "level_infill", "finish_perimeter", "finish_infill")),
+        sk["max_vol"]))
+    if sk["top_fill_pattern"] and sk["top_fill_pattern"].lower() not in ("monotonic", "monotoniclines", "rectilinear", "alignedrectilinear"):
+        log("note: top fill pattern '%s' is not supported on the skin; monotonic lines are used" % sk["top_fill_pattern"])
     W, stats = make_skin(ctx, regions, (sx, sy), sz, st["end_retracted"], end_tool, cfg)
     skin = ["; ===== nonplanar_top %s: skin start =====" % VERSION] + W.g
     if m204: skin.append(m204)

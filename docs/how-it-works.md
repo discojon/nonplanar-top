@@ -1,7 +1,7 @@
 # How it works
 
 ## 1. Read the file
-PrusaSlicer runs the script on the exported G-code. Binary `.bgcode` files are decoded (including thumbnails and metadata) and the result is written back as plain G-code. The slicer settings embedded at the end of the file are read so the skin uses your filament, retraction and speed settings.
+PrusaSlicer runs the script on the exported G-code. Binary `.bgcode` files are decoded (including thumbnails and metadata) and the result is written back as plain G-code. The slicer settings embedded at the end of the file are read so the skin uses your filament, retraction, line width, speed and acceleration settings ([details](settings.md#skin-settings-taken-from-the-print-profile)).
 
 ## 2. Map the print from above
 Every extrusion is drawn onto a 0.1 mm grid, layer by layer, giving the height of the top of the print at every point and which tool and object printed it.

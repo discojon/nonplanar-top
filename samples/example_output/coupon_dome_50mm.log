@@ -1,24 +1,25 @@
-nonplanar_top 0.2.0  2026-11-12 16:32:05
+nonplanar_top 0.3.0  2026-11-12 17:42:51
 input: coupon_dome_50mm.gcode
-nonplanar_top 0.2.0 - coupon_dome_50mm.gcode
+nonplanar_top 0.3.0 - coupon_dome_50mm.gcode
 settings: shroud_height_mm=1.5 max_slope_deg=12 safety_margin_mm=0.3
-parsed 20392 lines, 13881 extrusion segments, 16 layers (0.0s)
+parsed 20378 lines, 13882 extrusion segments, 16 layers (0.0s)
 rasterised 556x556 grid (0.1s)
-candidate area 2450 mm2 (0.6s)
+candidate area 2450 mm2 (0.5s)
 toolhead clearance excluded 393 mm2 of shallow surface
-removed 337.6 mm of filament (10.4 m of path) from the top layers (1.4s)
-skin: 11626 moves, 322.8 mm of filament (1.9s)
-verification: passed (2.3s)
-   skin_points: 41988
-   max_plow_into_layers_mm: -0.022250000000000103
+removed 337.7 mm of filament (10.4 m of path) from the top layers (1.4s)
+skin settings: widths .45/.45/.45/.42 mm, speeds 250/250/200/150 mm/s, accel 6000/7000/5000/2000 mm/s2, flow limit 12.0 mm3/s
+skin: 11289 moves, 320.5 mm of filament (1.8s)
+verification: passed (2.2s)
+   skin_points: 40647
+   max_plow_into_layers_mm: -0.024499999999999744
    head_clearance_worst_at: pass 1  X99.70 Y110.61 Z2.035
    head_clearance_count_short: 0
-   head_clearance_worst_mm: 0.03636322975158701
-   travel_worst_at: pass 1 X131.77 Y78.09 Z2.039 (head -0.040, material -0.272)
-   travel_clearance_worst_mm: 0.040363229751587015
-   coverage_levelling: 0.9990231877831989
-   coverage_finish: 0.9990436445835507
+   head_clearance_worst_mm: 0.03636299133300791
+   travel_worst_at: pass 1 X148.20 Y94.98 Z2.040 (head -0.041, material -0.248)
+   travel_clearance_worst_mm: 0.041362991333007804
+   coverage_levelling: 0.9965223972956525
+   coverage_finish: 0.9982100574315859
    retraction_issues_in_out: (0, 0)
    feedrate_range_mm_min: (720.0, 21000.0)
    skin_z_range: (1.835, 3.198)
-written coupon_dome_50mm_nonplanar.gcode
+written /tmp/claude-0/-home-claude/ab1c43cd-0f22-50c7-ad4f-cbb731a71619/scratchpad/reg2/d.gcode

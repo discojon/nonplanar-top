@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 2026-11-12
+- The skin now uses the print profile's line widths, speeds and accelerations: perimeter and solid infill settings for the levelling pass, external perimeter and top solid infill settings for the finish pass. Each can still be overridden in `nonplanar_top.ini` or Notes.
+- The finish pass runs at the profile's *Fill angle* by default (`finish_direction = profile`); `auto` keeps the old behaviour.
+- The skin respects the filament's *Max volumetric speed*, so thick parts of the levelling pass slow down instead of under-extruding.
+- If you keep an old `nonplanar_top.ini`, its fixed speeds still override the profile; change them to `profile` to use the new behaviour.
+
 ## 0.2.1 - 2026-11-12
 - Licence changed to AGPL-3.0-or-later (the `.bgcode` reader ports code from Prusa's AGPL-licensed libbgcode).
 - Toolhead data tables are marked and licensed separately under CC BY-SA 4.0, as required by their source.

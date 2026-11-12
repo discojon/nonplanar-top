@@ -1,0 +1,17 @@
+Installing nonplanar_top (Printables download)
+==============================================
+Printables doesn't allow .bat files, so the one-click installer is only in the
+GitHub download: https://github.com/discojon/nonplanar-top/releases
+
+Manual install (about 5 minutes):
+1. Install Python 3.10+ from python.org (tick "Add python.exe to PATH").
+2. Open Command Prompt and run:
+     py -m pip install numpy scipy shapely opencv-python
+3. Copy nonplanar_top.py and nonplanar_top.ini to C:\PrusaTools\nonplanar\
+4. Measure your shroud height and put it in nonplanar_top.ini (see docs\measuring.md).
+5. Run  py -0p  to find python.exe, then in PrusaSlicer (Expert mode) put ONE line in
+   Print Settings > Output options > Post-processing scripts, for example:
+     "C:\Users\you\AppData\Local\Programs\Python\Python312\python.exe" "C:\PrusaTools\nonplanar\nonplanar_top.py"
+6. Type  nonplanar  in Print Settings > Notes and save the profile under a new name.
+
+Full guide: docs\installation.md

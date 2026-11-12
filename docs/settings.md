@@ -21,12 +21,25 @@ On the command line, use `--set key=value`.
 | `edge_inset_mm` | `0.0` | Gap kept from vertical walls and hole edges. `0` lets the skin run to the edge. |
 | `finish_layer_mm` | `0.2` | Thickness of the finish pass. |
 | `min_level_layer_mm` | `0.1` | Thinnest allowed levelling pass. |
-| `finish_direction` | `auto` | Finish line direction: `auto` (along the region's long side), `x`, `y`, or an angle in degrees. The levelling pass runs at 90° to it. |
-| `level_perimeter_speed` | `40` | mm/s |
-| `level_infill_speed` | `60` | mm/s |
-| `finish_perimeter_speed` | `35` | mm/s |
-| `finish_infill_speed` | `50` | mm/s |
-| `skin_accel` | `1500` | mm/s² while printing the skin (the previous value is restored afterwards). |
+| `finish_direction` | `profile` | Finish line direction (monotonic lines): `profile` (the print profile's *Fill angle*), `auto` (along the region's long side), `x`, `y`, or an angle in degrees. The levelling pass runs at 90° to it. |
+| `skin_line_width` | `profile` | Line width in mm for all skin lines. `profile`: see below. |
+| `level_perimeter_speed` | `profile` | mm/s. `profile` = *Perimeters* speed |
+| `level_infill_speed` | `profile` | mm/s. `profile` = *Solid infill* speed |
+| `finish_perimeter_speed` | `profile` | mm/s. `profile` = *External perimeters* speed |
+| `finish_infill_speed` | `profile` | mm/s. `profile` = *Top solid infill* speed |
+| `skin_accel` | `profile` | mm/s² for all skin moves. `profile` = the matching acceleration per line type (the previous value is restored afterwards). |
+
+### Skin settings taken from the print profile
+
+With `profile` (the default), the skin uses the settings PrusaSlicer would use for the same kind of line, resolved the same way (percentages, and `0` meaning "use the default"):
+
+| | Levelling pass | Finish pass |
+|---|---|---|
+| Outline loop | *Perimeters*: width, speed, acceleration | *External perimeters*: width, speed, acceleration |
+| Lines | *Solid infill*: width, speed, acceleration | *Top solid infill*: width, speed, acceleration |
+| Direction | *Fill angle* + 90° | *Fill angle* |
+
+The lines are always monotonic; other *Top fill pattern* choices are noted in the log and ignored. Speeds are further limited by the filament's *Max volumetric speed* (the levelling pass can be up to about 1 mm thick, so it often runs slower than the profile speed) and by the printer's maximum Z speed on slopes. Accelerations are capped at the printer's maximum.
 | `travel_lift_mm` | `0.6` | Height of travel moves above the skin. |
 | `on_unsafe` | `error` | If a safety check fails: `error` stops the export and shows why; `skip` exports the file unchanged. |
 | `debug_image` | `0` | `1` saves `nonplanar_top_last.png` (smoothed and excluded areas) next to the log. Needs `matplotlib`. |
