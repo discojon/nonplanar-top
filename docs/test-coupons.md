@@ -10,6 +10,8 @@ Three small parts in `samples/` for trying the tool before using it on real prin
 | `coupon_ramp_2deg.stl` | 60 × 25 × 4.1 mm | flat 2° ramp | 8 min | ~2 min |
 | `coupon_wave_80mm.stl` | 80 × 40 × 3.6 mm | gentle wave, ±0.6 mm | 16 min | ~4 min |
 
+**Quickest start:** open `samples/nonplanar_top_test_coupons.3mf` in PrusaSlicer. It has all three coupons on the plate with the nonplanar print profile already selected; just add your post-processing line.
+
 Print each once with your normal profile and once with the nonplanar profile, then compare under a raking light.
 
 ## What to look for

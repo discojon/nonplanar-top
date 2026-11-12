@@ -6,7 +6,7 @@ ver = re.search(r'VERSION = "([^"]+)"', open(os.path.join(ROOT, "nonplanar_top.p
 files = ["nonplanar_top.py", "nonplanar_top.ini", "install_windows.bat", "requirements.txt",
          "README.md", "LICENSE", "CREDITS.md", "CHANGELOG.md", "profiles/NONPLANAR_print_profile.ini",
          "samples/README.md", "samples/coupon_dome_50mm.stl", "samples/coupon_ramp_2deg.stl",
-         "samples/coupon_wave_80mm.stl"]
+         "samples/coupon_wave_80mm.stl", "samples/nonplanar_top_test_coupons.3mf"]
 files += ["docs/" + f for f in sorted(os.listdir(os.path.join(ROOT, "docs"))) if f.endswith(".md")]
 files += ["docs/images/" + f for f in sorted(os.listdir(os.path.join(ROOT, "docs/images")))]
 os.makedirs(os.path.join(ROOT, "dist"), exist_ok=True)
